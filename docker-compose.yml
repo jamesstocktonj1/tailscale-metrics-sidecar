@@ -1,0 +1,9 @@
+services:
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:latest
+    restart: unless-stopped
+    network_mode: host
+    command: ["--config=/etc/otelcol/config.yaml"]
+    env_file: .env
+    volumes:
+      - ./otel-config.yaml:/etc/otelcol/config.yaml:ro

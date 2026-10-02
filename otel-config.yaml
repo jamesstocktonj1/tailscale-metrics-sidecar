@@ -1,0 +1,36 @@
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: tailscale
+          scrape_interval: 30s
+          metrics_path: /metrics
+          static_configs:
+            - targets: ["100.100.100.100:80"]
+              labels:
+                node: ${env:NODE_NAME}
+                role: exit-node
+
+processors:
+  resource:
+    attributes:
+      - key: host.name
+        value: ${env:NODE_NAME}
+        action: upsert
+      - key: tailscale.role
+        value: exit-node
+        action: upsert
+  batch: {}
+
+exporters:
+  otlp:
+    endpoint: ${env:COLLECTOR_ENDPOINT}
+    tls:
+      insecure: true   # or configure certs if crossing untrusted networks
+
+service:
+  pipelines:
+    metrics:
+      receivers: [prometheus]
+      processors: [resource, batch]
+      exporters: [otlp]
