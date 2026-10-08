@@ -10,6 +10,13 @@ receivers:
               labels:
                 node: ${env:NODE_NAME}
                 role: exit-node
+        - job_name: cloudflared
+          scrape_interval: 30s
+          metrics_path: /metrics
+          static_configs:
+            - targets: ["127.0.0.1:20241"]
+              labels:
+                node: ${env:NODE_NAME}
 
 processors:
   resource:
